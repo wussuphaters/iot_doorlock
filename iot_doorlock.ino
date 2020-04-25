@@ -7,33 +7,19 @@
  * ***************************************************************************
  */
 
-#include <ESP32Servo.h>
-#include "screen.h"
+#include "hardware.h"
 #include "fingerprint_scanner.h"
-#include "buzzer.h"
 #include "keypad.h"
 #include "mqtt.h"
-
-#define SERVO_PIN 23
-#define GREEN_LED 18
-#define RED_LED 4
-#define PUSH_BUTTON 15
-
-Servo servo;
-bool unlocked=false;
 
 void setup() {
   Serial.begin(115200);  
   init_wifi();
   init_mqtt();
+  init_hardware();
   
   delay(100);
-  servo.setPeriodHertz(50);
-  servo.attach(SERVO_PIN, 0, 2500);
-  pinMode(GREEN_LED, OUTPUT);
-  pinMode(RED_LED, OUTPUT);
-  pinMode(PUSH_BUTTON, INPUT);
-  display_init();
+  init_display();
   fingerprint_scanner_init();
 
   display_place_finger();
@@ -97,32 +83,4 @@ void loop() {
       display_place_finger();
     }
   }
-}
-
-void open_lock()  {
-  Serial.println("Unlocking door");
-  display_lock();
-  digitalWrite(GREEN_LED, HIGH);
-  servo.write(180);
-  unlocked=true;
-  delay(400);
-  digitalWrite(GREEN_LED, LOW);
-  display_unlock();
-}
-
-void close_lock() {
-  Serial.println("Locking door");
-  digitalWrite(RED_LED, HIGH);
-  servo.write(0);
-  unlocked=false;
-  display_lock();
-  delay(800);
-  digitalWrite(RED_LED, LOW);
-  display_place_finger();
-}
-
-void on_button_press()  {
-  beep_keypress();
-  if(!unlocked) open_lock();
-  else close_lock();
 }
