@@ -20,26 +20,26 @@ void fingerprint_scanner_init() {
 //Scans a new fingerprint (twice) and stores it
 bool add_fingerprint(int user_id)  {
   if(fpScanner.verifyPassword()) {
-    Serial.println("Capteur biométrique détecté");
-    Serial.println("Enregistrement de l'empreinte de l'utilisateur #"+String(user_id));
+    Serial.println("Fingerprint scanner detected");
+    Serial.println("Enrolling fingerprint for user #"+String(user_id));
     int empreinte=-1;
     display_place_finger();
     while(empreinte != FINGERPRINT_OK)  {
       empreinte=fpScanner.getImage();
       switch(empreinte) {
         case FINGERPRINT_OK:
-          Serial.println("Image prise");
+          Serial.println("Image taken");
           break;
         case FINGERPRINT_NOFINGER:
           return false;
         case FINGERPRINT_PACKETRECIEVEERR:
-          Serial.println("Erreur de communication avec le capteur");
+          Serial.println("Communication error with scanner");
           return false;
         case FINGERPRINT_IMAGEFAIL:
-          Serial.println("Erreur de capture");
+          Serial.println("Capture error");
           return false;
         default:
-          Serial.println("Erreur inconnue");
+          Serial.println("Unknown error");
           return false;
       }
     }
@@ -47,51 +47,51 @@ bool add_fingerprint(int user_id)  {
     empreinte=fpScanner.image2Tz();
     switch (empreinte) {
       case FINGERPRINT_OK:
-        Serial.println("Image convertie");
+        Serial.println("Image converted");
         break;
       case FINGERPRINT_IMAGEMESS:
-        Serial.println("Mauvaise qualité d'image");
+        Serial.println("Bad image quality");
         return false;
       case FINGERPRINT_PACKETRECIEVEERR:
-        Serial.println("Erreur de communication");
+        Serial.println("Communication error");
         return false;
       case FINGERPRINT_FEATUREFAIL:
-        Serial.println("Aucune empreinte détectée");
+        Serial.println("No fingerprint detected");
         return false;
       case FINGERPRINT_INVALIDIMAGE:
-        Serial.println("Aucune empreinte détectée");
+        Serial.println("No fingerprint detected");
         return false;
       default:
         Serial.println("Erreur inconnue");
         return false;
     }
 
-    Serial.println("Retirez votre doigt");
+    Serial.println("Remove finger");
     display_remove_finger();
     empreinte=0;
     while(empreinte != FINGERPRINT_NOFINGER) {
       empreinte=fpScanner.getImage();
     }
 
-    Serial.println("Placer le même doigt sur le capteur");
+    Serial.println("Place same finger");
     display_place_finger();
     empreinte=-1;
     while(empreinte != FINGERPRINT_OK)  {
       empreinte=fpScanner.getImage();
       switch(empreinte) {
         case FINGERPRINT_OK:
-          Serial.println("Image prise");
+          Serial.println("Image taken");
           break;
         case FINGERPRINT_NOFINGER:
           return false;
         case FINGERPRINT_PACKETRECIEVEERR:
-          Serial.println("Erreur de communication avec le capteur");
+          Serial.println("Communication error");
           return false;
         case FINGERPRINT_IMAGEFAIL:
-          Serial.println("Erreur de capture");
+          Serial.println("Capture error");
           return false;
         default:
-          Serial.println("Erreur inconnue");
+          Serial.println("Unknown error");
           return false;
       }
     }
@@ -99,41 +99,41 @@ bool add_fingerprint(int user_id)  {
     empreinte=fpScanner.image2Tz();
     switch (empreinte) {
       case FINGERPRINT_OK:
-        Serial.println("Image convertie");
+        Serial.println("Image converted");
         break;
       case FINGERPRINT_IMAGEMESS:
-        Serial.println("Mauvaise qualité d'image");
+        Serial.println("Bad image quality");
         return false;
       case FINGERPRINT_PACKETRECIEVEERR:
-        Serial.println("Erreur de communication");
+        Serial.println("Communication error");
         return false;
       case FINGERPRINT_FEATUREFAIL:
-        Serial.println("Aucune empreinte détectée");
+        Serial.println("No fingerprint detected");
         return false;
       case FINGERPRINT_INVALIDIMAGE:
-        Serial.println("Aucune empreinte détectée");
+        Serial.println("No fingerprint detected");
         return false;
       default:
-        Serial.println("Erreur inconnue");
+        Serial.println("Unknown error");
         return false;
     }
-    Serial.println("Retirez votre doigt");
+    Serial.println("Remove finger");
     display_remove_finger();
 
     switch(empreinte) {
       case FINGERPRINT_OK:
-        Serial.println("Les empreintes sont identiques");
+        Serial.println("Fingerprints match");
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
-        Serial.println("Erreur de communication");
+        Serial.println("Communication error");
         return false;
         break;
       case FINGERPRINT_ENROLLMISMATCH:
-        Serial.println("Les empreintes de coïncident pas");
+        Serial.println("Fingerprints don't match");
         return false;
         break;
       default:
-        Serial.println("Erreur inconnue");
+        Serial.println("Unknown error");
         return false;
         break;
     }
@@ -141,29 +141,28 @@ bool add_fingerprint(int user_id)  {
     empreinte=fpScanner.storeModel(user_id);
     switch(empreinte) {
       case FINGERPRINT_OK:
-        Serial.println("Empreinte enregistrée");
+        Serial.println("Fingerprint enrolled");
         return true;
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
-        Serial.println("Erreur de communication");
+        Serial.println("Communication error");
         return false;
         break;
       case FINGERPRINT_BADLOCATION:
-        Serial.println("Impossible d'enregistrer l'empreinte à cet endroit");
+        Serial.println("Cannot store fingerprint for this user id");
         return false;
         break;
       case FINGERPRINT_FLASHERR:
-        Serial.println("Erreur d'écriture en mémoire flash");
+        Serial.println("Flash memory write error");
         return false;
         break;
       default:
-        Serial.println("Erreur inconnue");
+        Serial.println("Unknown error");
         return false;
         break;
     }
-  }
-  else  {
-    Serial.println("Impossible de se connecter au capteur biométrique");
+  } else  {
+    Serial.println("Could not connect to fingerprint scanner");
     return false;
   }
 }
@@ -171,70 +170,76 @@ bool add_fingerprint(int user_id)  {
 //Scans a fingerprint and compares it to the stored ones
 int check_fingerprint()
 {
-  int empreinte=fpScanner.getImage();
-  switch(empreinte) {
-    case FINGERPRINT_OK:
-      Serial.println("Image prise");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.println("Pas d'empreinte détectée");
-      return -1;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Erreur de communication");
-      return -1;
-    case FINGERPRINT_IMAGEFAIL:
-      Serial.println("Erreur de capture");
-      return -1;
-    default:
-      Serial.println("Erreur inconnue");
-      return -1;
-  }
-
-  empreinte=fpScanner.image2Tz();
-  switch(empreinte) {
-    case FINGERPRINT_OK:
-      Serial.println("Image convertie");
-      break;
-    case FINGERPRINT_IMAGEMESS:
-      Serial.println("Mauvaise qualité d'image");
-      return -1;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Erreur de communication");
-      return -1;
-    case FINGERPRINT_FEATUREFAIL:
-      Serial.println("Aucune empreinte détectée");
-      return -1;
-    case FINGERPRINT_INVALIDIMAGE:
-      Serial.println("Aucune empreinte détectée");
-      return -1;
-    default:
-      Serial.println("Erreur inconnue");
-      return -1;
-  }
-
-  empreinte=fpScanner.fingerFastSearch();
-  switch(empreinte) {
-    case FINGERPRINT_OK:
-      if(fpScanner.confidence > 40) {
-        Serial.println("Correspondance à l'empreinte "+String(fpScanner.fingerID)+" trouvée de "+String(fpScanner.confidence)+"%");
-        return fpScanner.fingerID;
-      } else  {
-        Serial.println("Correspondance insuffisante");
+  if(fpScanner.verifyPassword()) {
+    Serial.println("Fingerprint scanner detected");
+    int empreinte=fpScanner.getImage();
+    switch(empreinte) {
+      case FINGERPRINT_OK:
+        Serial.println("Image taken");
+        break;
+      case FINGERPRINT_NOFINGER:
+        Serial.println("No fingerprint detected");
+        return -1;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
+        return -1;
+      case FINGERPRINT_IMAGEFAIL:
+        Serial.println("Capture error");
+        return -1;
+      default:
+        Serial.println("Unknown error");
+        return -1;
+    }
+  
+    empreinte=fpScanner.image2Tz();
+    switch(empreinte) {
+      case FINGERPRINT_OK:
+        Serial.println("Image converted");
+        break;
+      case FINGERPRINT_IMAGEMESS:
+        Serial.println("Basd image quality");
+        return -1;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
+        return -1;
+      case FINGERPRINT_FEATUREFAIL:
+        Serial.println("No fingerprint detected");
+        return -1;
+      case FINGERPRINT_INVALIDIMAGE:
+        Serial.println("No fingerprint detected");
+        return -1;
+      default:
+        Serial.println("Unknown error");
+        return -1;
+    }
+  
+    empreinte=fpScanner.fingerFastSearch();
+    switch(empreinte) {
+      case FINGERPRINT_OK:
+        if(fpScanner.confidence > 40) {
+          Serial.println(String(fpScanner.confidence)+"% match to user id #"+String(fpScanner.fingerID));
+          return fpScanner.fingerID;
+        } else  {
+          Serial.println("Unsufficient confidence");
+          return 0;
+        }
+        break;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
+        return -1;
+        break;
+      case FINGERPRINT_NOTFOUND:
+        Serial.println("No match found");
         return 0;
-      }
-      break;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Erreur de communication");
-      return -1;
-      break;
-    case FINGERPRINT_NOTFOUND:
-      Serial.println("Aucune correspondance trouvée");
-      return 0;
-      break;
-    default:
-      Serial.println("Erreur inconnue");
-      return -1;
-      break;
+        break;
+      default:
+        Serial.println("Unknown error");
+        return -1;
+        break;
+    }
+  } else  {
+    Serial.println("Could not connect to fingerprint scanner");
+    return false;
   }
 }
 

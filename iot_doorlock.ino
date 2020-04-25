@@ -1,7 +1,6 @@
 /*****************************************************************************
  * 
  * Main file for the IOT doorlock processing.
- * Uses the ESP32Servo library written by @hephaestus.
  * 
  * Written by Maël PONCHANT
  * 
@@ -102,7 +101,7 @@ void loop() {
 }
 
 void open_lock()  {
-  Serial.println("Déverrouillage de la porte");
+  Serial.println("Unlocking door");
   display_lock();
   digitalWrite(GREEN_LED, HIGH);
   servo.write(180);
@@ -113,7 +112,7 @@ void open_lock()  {
 }
 
 void close_lock() {
-  Serial.println("Vérrouillage de la porte");
+  Serial.println("Locking door");
   digitalWrite(RED_LED, HIGH);
   servo.write(0);
   unlocked=false;
@@ -131,20 +130,20 @@ void on_button_press()  {
 
 void reconnect_wifi() {
   if(WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi déconnecté, tentative de reconnexion...");
+    Serial.println("WiFi disconnected, reconnecting...");
     WiFi.disconnect();
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    if(WiFi.status() != WL_CONNECTED) Serial.println("Succès");
-    else Serial.println("Echec");
+    if(WiFi.status() != WL_CONNECTED) Serial.println("Reconnected successfully");
+    else Serial.println("Failed to reconnect");
   }
 }
 
 void connect_wifi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connexion WiFi..");
+  Serial.print("Connecting to WiFi network..");
   while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
   }
-  Serial.println("\nConnecté");
+  Serial.println("\nConnected successfully");
 }

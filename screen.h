@@ -425,7 +425,7 @@ static const unsigned char PROGMEM error_logo[] =  {
 
 bool display_init() {
   if(!display.begin(SSD1306_SWITCHCAPVCC, display_adress)) {
-    Serial.println(F("Connexion à l'écran échouée"));
+    Serial.println(F("Failed to connect to display"));
     return false;
   } else return true;
 }
