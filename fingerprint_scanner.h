@@ -18,14 +18,10 @@ void fingerprint_scanner_init() {
 }
 
 //Scans a new fingerprint (twice) and stores it
-bool add_fingerprint()  {
+bool add_fingerprint(int user_id)  {
   if(fpScanner.verifyPassword()) {
     Serial.println("Capteur biométrique détecté");
-    int id=0;
-    while(id==0)  {
-      id=1;
-    }
-    Serial.println("Enregistrement de l'empreinte #"+String(id));
+    Serial.println("Enregistrement de l'empreinte de l'utilisateur #"+String(user_id));
     int empreinte=-1;
     display_place_finger();
     while(empreinte != FINGERPRINT_OK)  {
@@ -35,16 +31,16 @@ bool add_fingerprint()  {
           Serial.println("Image prise");
           break;
         case FINGERPRINT_NOFINGER:
-          break;
+          return false;
         case FINGERPRINT_PACKETRECIEVEERR:
           Serial.println("Erreur de communication avec le capteur");
-          break;
+          return false;
         case FINGERPRINT_IMAGEFAIL:
           Serial.println("Erreur de capture");
-          break;
+          return false;
         default:
           Serial.println("Erreur inconnue");
-          break;
+          return false;
       }
     }
     
@@ -87,16 +83,16 @@ bool add_fingerprint()  {
           Serial.println("Image prise");
           break;
         case FINGERPRINT_NOFINGER:
-          break;
+          return false;
         case FINGERPRINT_PACKETRECIEVEERR:
           Serial.println("Erreur de communication avec le capteur");
-          break;
+          return false;
         case FINGERPRINT_IMAGEFAIL:
           Serial.println("Erreur de capture");
-          break;
+          return false;
         default:
           Serial.println("Erreur inconnue");
-          break;
+          return false;
       }
     }
     
@@ -142,7 +138,7 @@ bool add_fingerprint()  {
         break;
     }
 
-    empreinte=fpScanner.storeModel(id);
+    empreinte=fpScanner.storeModel(user_id);
     switch(empreinte) {
       case FINGERPRINT_OK:
         Serial.println("Empreinte enregistrée");
@@ -240,4 +236,25 @@ int check_fingerprint()
       return -1;
       break;
   }
+}
+
+//Checks if a fingerprint corresponds to a user id
+bool is_fingerprint_registered(int user_id)  {
+  if(fpScanner.loadModel(user_id) == FINGERPRINT_OK) return true;
+  else return false;
+}
+
+//Updates stored fingerprints (eg if user is in database deleted)
+int delete_fingerprint(int user_id)  {
+  Serial.println("Deleting fingerprint corresponding to user id #"+String(user_id)+"...");
+  int tries = 0;
+  int res;
+
+  while(res = fpScanner.deleteModel(user_id) != FINGERPRINT_OK && tries < 3)  {
+    tries++;
+    Serial.println("Try "+String(tries)+" to delete fringerprint failed");
+  }
+
+  if(res == FINGERPRINT_OK) return true;
+  return false;
 }
