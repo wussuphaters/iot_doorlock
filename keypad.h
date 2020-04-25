@@ -8,9 +8,10 @@
  */
 
 #include <Keypad.h>
+#include "api.h"
 #include "mbedtls/md.h"
 
-const String pinHash="03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+const String offline_pin_hash="03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
 
 const byte ROWS = 4;
 const byte COLS = 4;
@@ -27,7 +28,7 @@ byte colPins[COLS] = {26, 25, 33, 32};
 Keypad numpad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 //Hashes the PIN entered by the user and compares it to the authorized stored hashed PIN
-bool checkPin(String enteredPin) {
+int checkPin(String enteredPin) {
   size_t enteredPinLength=enteredPin.length();
   byte enteredPinHashArray[32];
   String enteredPinHash="";
@@ -47,6 +48,14 @@ bool checkPin(String enteredPin) {
     enteredPinHash+=String(str);
   }
 
-  if(enteredPinHash==pinHash) return true;
-  else return false;
+  JsonObject& users = get_users();
+  if(users.containsKey("users"))  {
+    int user_id = 0;
+    for(int i = 0 ; i < users["users"].size() ; i++)  {
+      if(users["user"][i]["pinHash"] == enteredPinHash) user_id = users["user"][i]["id"];
+    }
+    return user_id;
+  } else  {
+    return -1;
+  }
 }

@@ -61,17 +61,29 @@ void loop() {
         key=numpad.getKey();
         if(key) beep_keypress();
       }
-  
-      if(enteredPin.length() > 0 && checkPin(enteredPin))  {
-        Serial.println("Code bon");
-        beep_ok();
-        open_lock();
-      } else  {
-        display_error();
-        beep_nok();
-        display_place_finger();
+      if(enteredPin.length() > 0) {
+        int user_id = checkPin(enteredPin);
+        if(user_id > 0)  {
+          Serial.println("Access granted to user #"+String(user_id));
+          if(!is_fingerprint_registered(user_id))  {
+            Serial.println("User has no registered fingerprint, registering");
+            int tries = 0;
+            while(!add_fingerprint(user_id) && tries < 3)  {
+              tries++;
+              Serial.println("Try "+String(tries)+" to register fingerprint failed");
+            }
+          }
+          beep_ok();
+          open_lock();
+        } else if(user_id == 0)  {
+          display_error();
+          beep_nok();
+          display_place_finger();
+        } else  {
+          //Impossible de recup les users, doit utiliser master pin
+        }
+        enteredPin="";
       }
-      enteredPin="";
     }
   }
   else if(digitalRead(PUSH_BUTTON)==HIGH) on_button_press();
