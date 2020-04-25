@@ -8,27 +8,25 @@
  */
 
 #include <ESP32Servo.h>
-#include <WiFi.h>
 #include "screen.h"
 #include "fingerprint_scanner.h"
 #include "buzzer.h"
 #include "keypad.h"
+#include "mqtt.h"
 
 #define SERVO_PIN 23
 #define GREEN_LED 18
 #define RED_LED 4
 #define PUSH_BUTTON 15
 
-#define WIFI_SSID "tuveuxdupoulet"
-#define WIFI_PASSWORD "Mcwalt3risbacK"
-
 Servo servo;
-WiFiClient espClient;
 bool unlocked=false;
 
 void setup() {
   Serial.begin(115200);  
-  connect_wifi();
+  init_wifi();
+  init_mqtt();
+  
   delay(100);
   servo.setPeriodHertz(50);
   servo.attach(SERVO_PIN, 0, 2500);
@@ -43,6 +41,7 @@ void setup() {
 
 void loop() {
   reconnect_wifi();
+  reconnect_mqtt();
   char key=numpad.getKey();
 
   if(key) {
@@ -126,24 +125,4 @@ void on_button_press()  {
   beep_keypress();
   if(!unlocked) open_lock();
   else close_lock();
-}
-
-void reconnect_wifi() {
-  if(WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi disconnected, reconnecting...");
-    WiFi.disconnect();
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    if(WiFi.status() != WL_CONNECTED) Serial.println("Reconnected successfully");
-    else Serial.println("Failed to reconnect");
-  }
-}
-
-void connect_wifi() {
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to WiFi network..");
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-  }
-  Serial.println("\nConnected successfully");
 }
