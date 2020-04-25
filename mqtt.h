@@ -36,7 +36,7 @@ void on_message(char* topic, byte* message, unsigned int length)  {
         ESP.restart();
       }
       else if(command == CMD_DELETE_USER) {
-        
+        delete_fingerprint(json_msg["arguments"]["user_id"]);
       }
     }
   }
