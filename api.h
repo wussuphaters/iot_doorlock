@@ -1,6 +1,6 @@
 /*****************************************************************************
  * 
- * Header file defining all functions related to API.
+ * Header file defining all functions related to the projects' web API.
  * 
  * Written by Maël PONCHANT
  * 
@@ -32,7 +32,7 @@
 
       JsonObject& json_response = json_buffer.parseObject(response);
 
-      if(json_response.success())  {
+      if(json_response.success() && json_response.containsKey("token"))  {
         json_response["token"].printTo(api_access_token);
         return true;
       } else  {

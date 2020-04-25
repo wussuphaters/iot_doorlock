@@ -1,3 +1,12 @@
+/*****************************************************************************
+ * 
+ * Header file defining all functions related to the MQTT broker connection.
+ * 
+ * Written by Maël PONCHANT
+ * 
+ * ***************************************************************************
+ */
+
 #include <PubSubClient.h>
 #include "wireless_lan.h"
 

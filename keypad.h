@@ -55,7 +55,6 @@ int checkPin(String enteredPin) {
       if(users["user"][i]["pinHash"] == enteredPinHash) user_id = users["user"][i]["id"];
     }
     return user_id;
-  } else  {
-    return -1;
-  }
+  } else if(offline_pin_hash == enteredPinHash) return 1;
+  else return -1;
 }

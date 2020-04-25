@@ -1,3 +1,12 @@
+/*****************************************************************************
+ * 
+ * Header file defining all functions related to wireless LAN interface.
+ * 
+ * Written by Maël PONCHANT
+ * 
+ * ***************************************************************************
+ */
+
 #include <WiFi.h>
 
 #define WIFI_SSID "tuveuxdupoulet"

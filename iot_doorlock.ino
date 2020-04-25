@@ -47,7 +47,7 @@ void loop() {
       }
       if(enteredPin.length() > 0) {
         int user_id = checkPin(enteredPin);
-        if(user_id > 0)  {
+        if(user_id > 1)  {
           Serial.println("Access granted to user #"+String(user_id));
           if(!is_fingerprint_registered(user_id))  {
             Serial.println("User has no registered fingerprint, registering");
@@ -59,12 +59,17 @@ void loop() {
           }
           beep_ok();
           open_lock();
+        } else if(user_id == 1) {
+          beep_ok();
+          open_lock();
         } else if(user_id == 0)  {
           display_error();
           beep_nok();
           display_place_finger();
         } else  {
-          //Impossible de recup les users, doit utiliser master pin
+          display_user_access_error();
+          beep_nok();
+          display_place_finger();
         }
         enteredPin="";
       }

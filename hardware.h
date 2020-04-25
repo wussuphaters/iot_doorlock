@@ -1,3 +1,13 @@
+/*****************************************************************************
+ * 
+ * Header file defining all functions related to the doorlock hardware (LEDs, 
+ * button, servomotor).
+ * 
+ * Written by Maël PONCHANT
+ * 
+ * ***************************************************************************
+ */
+
 #include <ESP32Servo.h>
 #include "display.h"
 #include "buzzer.h"
