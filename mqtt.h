@@ -4,19 +4,22 @@
  * 
  * Written by Maël PONCHANT
  * 
+ * mosquitto_sub -h localhost -t "hosts/doorlock/entries" -u "host" -P "cAE99wC@WwQh"
+ * 
  * ***************************************************************************
  */
 
 #include <PubSubClient.h>
 #include "wireless_lan.h"
 
-#define MQTT_BROKER ""
+#define MQTT_BROKER "192.168.1.100"
 #define MQTT_PORT 1883
-#define MQTT_PASSWORD ""
+#define MQTT_USERNAME "host"
+#define MQTT_PASSWORD "cAE99wC@WwQh"
 #define MQTT_RECONNECT_TIMEOUT 5000
 
 //Topics
-#define DOORLOCK_TOPIC "hosts/doorlock"
+#define DOORLOCK_ENTRIES_TOPIC "hosts/doorlock/entries"
 
 //Commands
 #define CMD_REBOOT "reboot"
@@ -34,7 +37,7 @@ void on_message(char* topic, byte* message, unsigned int length)  {
     msg_str += (char)message[i];
   }
 
-  if(String(topic) == DOORLOCK_TOPIC)  {
+  if(String(topic) == DOORLOCK_ENTRIES_TOPIC)  {
     StaticJsonBuffer<200> json_buffer;
     JsonObject& json_msg = json_buffer.parseObject(msg_str);
 
@@ -56,9 +59,8 @@ void init_mqtt()  {
   mqtt_client.setCallback(on_message);
   
   Serial.print("Connecting to MQTT broker..");
-  if (mqtt_client.connect("IOT Doorlock")) {
+  if (mqtt_client.connect(MQTT_USERNAME, MQTT_USERNAME, MQTT_PASSWORD)) {
     Serial.println("Connected");
-    mqtt_client.subscribe(DOORLOCK_TOPIC);
   } else {
     Serial.print("Failed, rc=");
     Serial.print(mqtt_client.state());
@@ -72,13 +74,18 @@ void reconnect_mqtt() {
     mqtt_client.setCallback(on_message);
     
     Serial.print("MQTT broker disconnected, reconnecting...");
-    if (mqtt_client.connect("IOT Doorlock")) {
+    if (mqtt_client.connect(MQTT_USERNAME, MQTT_USERNAME, MQTT_PASSWORD)) {
       Serial.println("Connected");
-      mqtt_client.subscribe(DOORLOCK_TOPIC);
     } else {
       Serial.print("Failed to connect, rc=");
       Serial.print(mqtt_client.state());
       last_mqtt_connect_attempt = millis();
     }
+  }
+}
+
+void notify(int user_id) {
+  if(mqtt_client.connected()) {
+    mqtt_client.publish(DOORLOCK_ENTRIES_TOPIC, String(user_id).c_str());
   }
 }

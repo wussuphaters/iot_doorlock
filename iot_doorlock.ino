@@ -15,7 +15,7 @@
 void setup() {
   Serial.begin(115200);  
   init_wifi();
-  //init_mqtt();
+  init_mqtt();
   init_hardware();
   
   delay(100);
@@ -27,7 +27,7 @@ void setup() {
 
 void loop() {
   reconnect_wifi();
-  //reconnect_mqtt();
+  reconnect_mqtt();
   char key=numpad.getKey();
 
   if(key) {
@@ -64,12 +64,14 @@ void loop() {
           beep_ok();
           display_unlock();
           open_lock();
+          notify(user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
           display_lock();
           beep_ok();
           display_unlock();
           open_lock();
+          notify(user_id);
         } else if(user_id == 0)  {
           Serial.println("No pin match found, access denied");
           display_error();

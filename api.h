@@ -10,7 +10,7 @@
  #include <HTTPClient.h>
  #include <ArduinoJson.h>
 
- #define API_ADDR "http://192.168.1.97/smart_home_api/api/"
+ #define API_ADDR "http://192.168.1.100/smart_home_api/api/"
  #define DEVICE_NAME "IOT_Doorlock"
  #define DEVICE_PASSWORD "qwerty"
 
