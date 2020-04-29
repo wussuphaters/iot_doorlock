@@ -18,7 +18,7 @@ unsigned long last_wifi_connect_attempt = 0;
 void init_wifi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi network..");
-  while(WiFi.status() != WL_CONNECTED && millis() > (last_wifi_connect_attempt + WIFI_RECONNECT_TIMEOUT)) {
+  while(WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
   }

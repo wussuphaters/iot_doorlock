@@ -51,10 +51,19 @@ int checkPin(String enteredPin) {
   JsonObject& users = get_users();
   if(users.containsKey("users"))  {
     int user_id = 0;
-    for(int i = 0 ; i < users["users"].size() ; i++)  {
-      if(users["user"][i]["pinHash"] == enteredPinHash) user_id = users["user"][i]["id"];
+    JsonArray& user_array = users["users"];
+
+    Serial.println("Retrieved "+String(user_array.size())+" users, searching for a match");
+    for(int i = 0 ; i < user_array.size() ; i++)  {
+      if(user_array[i]["pin"] == enteredPinHash) return user_array[i]["id"];
     }
+    
     return user_id;
-  } else if(offline_pin_hash == enteredPinHash) return 1;
-  else return -1;
+  } else  {
+    if(offline_pin_hash == enteredPinHash) {
+      return 1;
+    } else  {
+      return -1;
+    }
+  }
 }

@@ -15,7 +15,7 @@
 void setup() {
   Serial.begin(115200);  
   init_wifi();
-  init_mqtt();
+  //init_mqtt();
   init_hardware();
   
   delay(100);
@@ -27,7 +27,7 @@ void setup() {
 
 void loop() {
   reconnect_wifi();
-  reconnect_mqtt();
+  //reconnect_mqtt();
   char key=numpad.getKey();
 
   if(key) {
@@ -36,8 +36,8 @@ void loop() {
     else if(!unlocked && (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9' || key=='A' || key=='B' || key=='C' || key=='D'))  {
       String enteredPin="";
 
-      while(key != '*' && enteredPin.length() <8) {
-        if(key) {
+      while(key != '*') {
+        if(key && enteredPin.length() < 8) {
           enteredPin+=key;
           display_pin(enteredPin.length());
         }
@@ -46,9 +46,11 @@ void loop() {
         if(key) beep_keypress();
       }
       if(enteredPin.length() > 0) {
+        display_processing();
         int user_id = checkPin(enteredPin);
         if(user_id > 1)  {
           Serial.println("Access granted to user #"+String(user_id));
+          /*
           if(!is_fingerprint_registered(user_id))  {
             Serial.println("User has no registered fingerprint, registering");
             int tries = 0;
@@ -57,16 +59,24 @@ void loop() {
               Serial.println("Try "+String(tries)+" to register fingerprint failed");
             }
           }
+          */
+          display_lock();
           beep_ok();
+          display_unlock();
           open_lock();
         } else if(user_id == 1) {
+          Serial.println("Master password used, access granted");
+          display_lock();
           beep_ok();
+          display_unlock();
           open_lock();
         } else if(user_id == 0)  {
+          Serial.println("No pin match found, access denied");
           display_error();
           beep_nok();
           display_place_finger();
         } else  {
+          Serial.println("User list could not be retrieved, master password must be used");
           display_user_access_error();
           beep_nok();
           display_place_finger();
@@ -77,7 +87,7 @@ void loop() {
   }
   else if(digitalRead(PUSH_BUTTON)==HIGH) on_button_press();
   else  {
-    int fp=check_fingerprint();
+    /*int fp=check_fingerprint();
     if(fp>0 && !unlocked) {
       beep_ok();
       open_lock();
@@ -86,6 +96,6 @@ void loop() {
       display_error();
       beep_nok();
       display_place_finger();
-    }
+    }*/
   }
 }
