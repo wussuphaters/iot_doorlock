@@ -19,3 +19,5 @@ JSON format :
 Available commands :
 * delete_user (with user_id argument)
 * reboot
+* lock
+* unlock
