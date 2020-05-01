@@ -16,14 +16,17 @@
 #define MQTT_PORT 1883
 #define MQTT_USERNAME "host"
 #define MQTT_PASSWORD "cAE99wC@WwQh"
-#define MQTT_RECONNECT_TIMEOUT 300000
+#define MQTT_RECONNECT_TIMEOUT 10000
 
 //Topics
 #define DOORLOCK_ENTRIES_TOPIC "hosts/doorlock/entries"
+#define DOORLOCK_COMMANDS_TOPIC "hosts/doorlock/commands"
 
 //Commands
 #define CMD_REBOOT "reboot"
 #define CMD_DELETE_USER "delete_user"
+#define CMD_UNLOCK "unlock"
+#define CMD_LOCK "lock"
 
 WiFiClient wifi_client;
 PubSubClient mqtt_client(wifi_client);
@@ -36,19 +39,24 @@ void on_message(char* topic, byte* message, unsigned int length)  {
   for (int i = 0; i < length; i++) {
     msg_str += (char)message[i];
   }
-
-  if(String(topic) == DOORLOCK_ENTRIES_TOPIC)  {
+  if(String(topic) == DOORLOCK_COMMANDS_TOPIC)  {
+    Serial.println("Command received, processing");
     StaticJsonBuffer<200> json_buffer;
     JsonObject& json_msg = json_buffer.parseObject(msg_str);
 
-    if(json_msg.success() && json_msg.containsKey("command"))  {
-      String command;
-      json_msg["command"].printTo(command);
-      if(command == CMD_REBOOT) {
-        ESP.restart();
-      }
-      else if(command == CMD_DELETE_USER) {
-        delete_fingerprint(json_msg["arguments"]["user_id"]);
+    if(json_msg.success())  {
+      if(json_msg.containsKey("command")) {
+        const char* command = json_msg["command"];
+        if(String(command) == CMD_REBOOT) {
+          Serial.println("Rebooting");
+          ESP.restart();
+        } else if(String(command) == CMD_DELETE_USER) {
+          delete_fingerprint(json_msg["arguments"]["user_id"]);
+        } else if(String(command) == CMD_UNLOCK)  {
+          open_lock();
+        } else if(String(command) == CMD_LOCK)  {
+          close_lock();
+        }
       }
     }
   }
@@ -61,6 +69,7 @@ void init_mqtt()  {
   Serial.print("Connecting to MQTT broker..");
   if (mqtt_client.connect(MQTT_USERNAME, MQTT_USERNAME, MQTT_PASSWORD)) {
     Serial.println("Connected");
+    mqtt_client.subscribe("hosts/doorlock/commands");
   } else {
     Serial.print("Failed, rc=");
     Serial.print(mqtt_client.state());
@@ -76,6 +85,7 @@ void reconnect_mqtt() {
     Serial.print("MQTT broker disconnected, reconnecting...");
     if (mqtt_client.connect(MQTT_USERNAME, MQTT_USERNAME, MQTT_PASSWORD)) {
       Serial.println("Connected");
+      mqtt_client.subscribe("hosts/doorlock/commands");
     } else {
       Serial.print("Failed to connect, rc=");
       Serial.print(mqtt_client.state());

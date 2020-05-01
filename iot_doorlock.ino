@@ -15,7 +15,7 @@
 void setup() {
   Serial.begin(115200);
   init_display();
-  display_text("Booting up")
+  display_text("Booting up");
   init_wifi();
   init_mqtt();
   init_hardware();
@@ -27,6 +27,7 @@ void setup() {
 void loop() {
   reconnect_wifi();
   reconnect_mqtt();
+  mqtt_client.loop();
   char key=numpad.getKey();
 
   if(key) {
@@ -59,12 +60,10 @@ void loop() {
             }
           }
           */
-          beep_ok();
           open_lock();
           notify(user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
-          beep_ok();
           open_lock();
           notify(user_id);
         } else if(user_id == 0)  {
@@ -74,7 +73,7 @@ void loop() {
           display_place_finger();
         } else  {
           Serial.println("User list could not be retrieved, master password must be used");
-          display_utext("Please use\nmaster pin");
+          display_text("Please use\nmaster pin");
           beep_nok();
           display_place_finger();
         }

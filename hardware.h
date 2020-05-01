@@ -29,6 +29,7 @@ void init_hardware()  {
 }
 
 void open_lock()  {
+  beep_ok();
   display_lock();
   Serial.println("Unlocking door");
   digitalWrite(GREEN_LED, HIGH);
@@ -40,6 +41,7 @@ void open_lock()  {
 }
 
 void close_lock() {
+  beep_ok();
   Serial.println("Locking door");
   digitalWrite(RED_LED, HIGH);
   servo.write(0);
@@ -51,7 +53,6 @@ void close_lock() {
 }
 
 void on_button_press()  {
-  beep_keypress();
   if(!unlocked) open_lock();
   else close_lock();
 }
