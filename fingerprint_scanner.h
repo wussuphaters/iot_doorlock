@@ -13,7 +13,7 @@
 Adafruit_Fingerprint fpScanner = Adafruit_Fingerprint(&Serial2);
 
 //Initializes communication with the fingerprint scanner
-void fingerprint_scanner_init() {
+void init_fingerprint_scanner() {
   fpScanner.begin(57600);
 }
 

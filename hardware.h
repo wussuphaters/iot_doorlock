@@ -29,12 +29,14 @@ void init_hardware()  {
 }
 
 void open_lock()  {
+  display_lock();
   Serial.println("Unlocking door");
   digitalWrite(GREEN_LED, HIGH);
   servo.write(180);
   unlocked=true;
   delay(400);
   digitalWrite(GREEN_LED, LOW);
+  display_unlock();
 }
 
 void close_lock() {

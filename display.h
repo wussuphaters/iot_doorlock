@@ -479,22 +479,12 @@ void display_pin(int stars)  {
   display.display();
 }
 
-void display_processing() {
+void display_text(String msg) {
   display.clearDisplay();
   //display.drawBitmap(32, 0, network_error_logo, LOGO_WIDTH, LOGO_HEIGHT, 1);
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0,0);
-  display.println("Wait...");
-  display.display();
-}
-
-void display_user_access_error()  {
-  display.clearDisplay();
-  //display.drawBitmap(32, 0, network_error_logo, LOGO_WIDTH, LOGO_HEIGHT, 1);
-  display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
-  display.println("Please use\nmaster pin");
+  display.println(msg);
   display.display();
 }

@@ -12,7 +12,7 @@
 
  #define API_ADDR "http://192.168.1.100/smart_home_api/api/"
  #define DEVICE_NAME "IOT_Doorlock"
- #define DEVICE_PASSWORD "qwerty"
+ #define DEVICE_PASSWORD "wAs17Z98^C3L"
 
  HTTPClient api;
  String api_access_token = "";

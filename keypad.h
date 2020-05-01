@@ -11,7 +11,7 @@
 #include "api.h"
 #include "mbedtls/md.h"
 
-const String offline_pin_hash="03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+const String offline_pin_hash="d49768af3021632108831e387f00737e654ad0f3e4d3bd418c631ec2abc2c54b";
 
 const byte ROWS = 4;
 const byte COLS = 4;

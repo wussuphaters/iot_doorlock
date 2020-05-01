@@ -16,7 +16,7 @@
 #define MQTT_PORT 1883
 #define MQTT_USERNAME "host"
 #define MQTT_PASSWORD "cAE99wC@WwQh"
-#define MQTT_RECONNECT_TIMEOUT 5000
+#define MQTT_RECONNECT_TIMEOUT 300000
 
 //Topics
 #define DOORLOCK_ENTRIES_TOPIC "hosts/doorlock/entries"

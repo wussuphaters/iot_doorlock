@@ -13,14 +13,13 @@
 #include "mqtt.h"
 
 void setup() {
-  Serial.begin(115200);  
+  Serial.begin(115200);
+  init_display();
+  display_text("Booting up")
   init_wifi();
   init_mqtt();
   init_hardware();
-  
-  delay(100);
-  init_display();
-  fingerprint_scanner_init();
+  init_fingerprint_scanner();
 
   display_place_finger();
 }
@@ -46,7 +45,7 @@ void loop() {
         if(key) beep_keypress();
       }
       if(enteredPin.length() > 0) {
-        display_processing();
+        display_text("Wait...");
         int user_id = checkPin(enteredPin);
         if(user_id > 1)  {
           Serial.println("Access granted to user #"+String(user_id));
@@ -60,16 +59,12 @@ void loop() {
             }
           }
           */
-          display_lock();
           beep_ok();
-          display_unlock();
           open_lock();
           notify(user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
-          display_lock();
           beep_ok();
-          display_unlock();
           open_lock();
           notify(user_id);
         } else if(user_id == 0)  {
@@ -79,7 +74,7 @@ void loop() {
           display_place_finger();
         } else  {
           Serial.println("User list could not be retrieved, master password must be used");
-          display_user_access_error();
+          display_utext("Please use\nmaster pin");
           beep_nok();
           display_place_finger();
         }
