@@ -4,7 +4,7 @@ This repository hosts the source code for my ESP32-based smart doorlock. It work
 
 # MQTT commands
 
-Some actions can be done remotely on the doorlock by sending a JSON object on the appropriate topic.
+Some actions can be done remotely on the doorlock by sending a JSON object on the topic devices/doorlock/commands.
 
 JSON format :
 
@@ -21,3 +21,7 @@ Available commands :
 * reboot
 * lock
 * unlock
+
+# Output
+
+The doorlock publishes the id of any user successfully authenticated in the topic /devices/doorlock/entries.
