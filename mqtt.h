@@ -19,8 +19,8 @@
 #define MQTT_RECONNECT_TIMEOUT 10000
 
 //Topics
-#define DOORLOCK_ENTRIES_TOPIC "hosts/doorlock/entries"
-#define DOORLOCK_COMMANDS_TOPIC "hosts/doorlock/commands"
+#define DOORLOCK_ENTRIES_TOPIC "devices/doorlock/entries"
+#define DOORLOCK_COMMANDS_TOPIC "devices/doorlock/commands"
 
 //Commands
 #define CMD_REBOOT "reboot"
