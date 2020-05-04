@@ -69,7 +69,7 @@ void init_mqtt()  {
   Serial.print("Connecting to MQTT broker..");
   if (mqtt_client.connect(MQTT_USERNAME, MQTT_USERNAME, MQTT_PASSWORD)) {
     Serial.println("Connected");
-    mqtt_client.subscribe("hosts/doorlock/commands");
+    mqtt_client.subscribe(DOORLOCK_COMMANDS_TOPIC);
   } else {
     Serial.print("Failed, rc=");
     Serial.print(mqtt_client.state());
@@ -85,7 +85,7 @@ void reconnect_mqtt() {
     Serial.print("MQTT broker disconnected, reconnecting...");
     if (mqtt_client.connect(MQTT_USERNAME, MQTT_USERNAME, MQTT_PASSWORD)) {
       Serial.println("Connected");
-      mqtt_client.subscribe("hosts/doorlock/commands");
+      mqtt_client.subscribe(DOORLOCK_COMMANDS_TOPIC);
     } else {
       Serial.print("Failed to connect, rc=");
       Serial.print(mqtt_client.state());

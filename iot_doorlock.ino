@@ -37,7 +37,11 @@ void loop() {
       String enteredPin="";
 
       while(key != '*') {
-        if(key && enteredPin.length() < 8) {
+        if(key=='#' && !unlocked) {
+          enteredPin = "";
+          display_place_finger();
+        }
+        else if(key && enteredPin.length() < 8) {
           enteredPin+=key;
           display_pin(enteredPin.length());
         }
