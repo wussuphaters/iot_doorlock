@@ -14,7 +14,7 @@
 
 #define MQTT_BROKER "192.168.1.100"
 #define MQTT_PORT 1883
-#define MQTT_USERNAME "host"
+#define MQTT_USERNAME "client"
 #define MQTT_PASSWORD "cAE99wC@WwQh"
 #define MQTT_RECONNECT_TIMEOUT 10000
 
