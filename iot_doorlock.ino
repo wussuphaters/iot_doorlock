@@ -28,6 +28,7 @@ void loop() {
   reconnect_wifi();
   reconnect_mqtt();
   mqtt_client.loop();
+  report_status();
   char key=numpad.getKey();
 
   if(key) {

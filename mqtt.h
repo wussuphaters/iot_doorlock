@@ -17,6 +17,7 @@
 #define MQTT_USERNAME "client"
 #define MQTT_PASSWORD "cAE99wC@WwQh"
 #define MQTT_RECONNECT_TIMEOUT 10000
+#define MQTT_STATUS_REPORT_TIMEOUT 3000
 
 //Topics
 #define DOORLOCK_ENTRIES_TOPIC "devices/doorlock/entries"
@@ -28,12 +29,21 @@
 #define CMD_DELETE_USER "delete_user"
 #define CMD_UNLOCK "unlock"
 #define CMD_LOCK "lock"
-#define CMD_REPORT_STATUS "report_status"
 
 WiFiClient wifi_client;
 PubSubClient mqtt_client(wifi_client);
 
 unsigned long last_mqtt_connect_attempt = 0;
+unsigned long last_status_report = 0;
+
+void report_status()  {
+  if(mqtt_client.connected() && (millis() > (last_status_report + MQTT_STATUS_REPORT_TIMEOUT))) {
+    Serial.println("Reporting doorlock status");
+    String msg = unlocked ? "unlocked" : "locked";
+    mqtt_client.publish(DOORLOCK_STATUS_TOPIC, String("{\"state\":\""+msg+"\"}").c_str());
+    last_status_report = millis();
+  }
+}
 
 void on_message(char* topic, byte* message, unsigned int length)  {
   String msg_str;
@@ -58,12 +68,6 @@ void on_message(char* topic, byte* message, unsigned int length)  {
           open_lock();
         } else if(String(command) == CMD_LOCK)  {
           close_lock();
-        } else if(String(command) == CMD_REPORT_STATUS)  {
-          if(mqtt_client.connected()) {
-            Serial.println("Reporting doorlock status");
-            String msg = unlocked ? "unlocked" : "locked";
-            mqtt_client.publish(DOORLOCK_STATUS_TOPIC, msg.c_str());
-          }
         }
       }
     }
