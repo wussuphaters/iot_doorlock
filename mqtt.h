@@ -21,12 +21,14 @@
 //Topics
 #define DOORLOCK_ENTRIES_TOPIC "devices/doorlock/entries"
 #define DOORLOCK_COMMANDS_TOPIC "devices/doorlock/commands"
+#define DOORLOCK_STATUS_TOPIC "devices/doorlock/status"
 
 //Commands
 #define CMD_REBOOT "reboot"
 #define CMD_DELETE_USER "delete_user"
 #define CMD_UNLOCK "unlock"
 #define CMD_LOCK "lock"
+#define CMD_REPORT_STATUS "report_status"
 
 WiFiClient wifi_client;
 PubSubClient mqtt_client(wifi_client);
@@ -56,6 +58,12 @@ void on_message(char* topic, byte* message, unsigned int length)  {
           open_lock();
         } else if(String(command) == CMD_LOCK)  {
           close_lock();
+        } else if(String(command) == CMD_REPORT_STATUS)  {
+          if(mqtt_client.connected()) {
+            Serial.println("Reporting doorlock status");
+            String msg = unlocked ? "unlocked" : "locked";
+            mqtt_client.publish(DOORLOCK_STATUS_TOPIC, msg.c_str());
+          }
         }
       }
     }
