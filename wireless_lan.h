@@ -10,7 +10,7 @@
 #include <WiFi.h>
 
 #define WIFI_SSID "tuveuxdupoulet"
-#define WIFI_PASSWORD "Mcwalt3risbacK"
+#define WIFI_PASSWORD "Mcwalt3r15bacK"
 #define WIFI_RECONNECT_TIMEOUT 120000
 
 unsigned long last_wifi_connect_attempt = 0;

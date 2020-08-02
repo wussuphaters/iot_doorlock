@@ -8,14 +8,14 @@ void report_status()  {
 }
 
 void handle_control() {
-  StaticJsonBuffer<600> json_buffer;
-  JsonObject& json_msg = json_buffer.parseObject(server.arg(0));
+  StaticJsonDocument<256> json_buffer;
+  auto error = deserializeJson(json_buffer, server.arg(0));
   
-  if(json_msg.success())  {
-    if(json_msg.containsKey("token") && json_msg.containsKey("state")) {
-      const char* token = json_msg["token"];
+  if(!error)  {
+    if(json_buffer.containsKey("token") && json_buffer.containsKey("state")) {
+      const char* token = json_buffer["token"];
       if(is_token_valid(String(token)))  {
-        const char* state = json_msg["state"];
+        const char* state = json_buffer["state"];
         if(String(state) == "lock") close_lock();
         else if(String(state) == "unlock") open_lock();
         server.send(200, "text/json", "{\"message\":\"Successfully controlled doorlock\"}");

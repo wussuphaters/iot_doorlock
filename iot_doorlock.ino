@@ -67,8 +67,8 @@ void loop() {
               tries++;
               Serial.println("Try "+String(tries)+" to register fingerprint failed");
             }
-          }
-          */
+          }*/
+          
           open_lock();
           //notify(user_id);
         } else if(user_id == 1) {
@@ -92,7 +92,7 @@ void loop() {
   }
   else if(digitalRead(PUSH_BUTTON)==HIGH) on_button_press();
   else  {
-    /*int fp=check_fingerprint();
+    int fp=check_fingerprint();
     if(fp>0 && !unlocked) {
       beep_ok();
       open_lock();
@@ -101,6 +101,6 @@ void loop() {
       display_error();
       beep_nok();
       display_place_finger();
-    }*/
+    }
   }
 }

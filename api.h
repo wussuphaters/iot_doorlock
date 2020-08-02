@@ -39,8 +39,8 @@
   }
  }
  
- JsonObject& get_users() {
-  StaticJsonBuffer<5000> json_buffer;
+StaticJsonDocument<5000> get_users() {
+  StaticJsonDocument<5000> json_buffer;
   
   if(WiFi.status() == WL_CONNECTED) {
     Serial.println("Attempting to retrieve user pin list...");
@@ -51,21 +51,21 @@
     if(response_code == 200) {
       String response = api.getString();
 
-      JsonObject& json_response = json_buffer.parseObject(response);
+      auto error = deserializeJson(json_buffer, response);
 
-      if(json_response.success())  {
+      if(!error)  {
         Serial.println("Successfully retrieved user pin list");
-        return json_response;
+        return json_buffer;
       } else  {
         Serial.println("Could not retrieve user pin list");
-        return json_buffer.createObject();
+        return json_buffer;
       }
     } else  {
       Serial.println("Could not retrieve user pin list");
-      return json_buffer.createObject();
+      return json_buffer;
     }
   } else  {
     Serial.println("WiFi not connected, could not retrieve user pin list");
-    return json_buffer.createObject();
+    return json_buffer;
   }
  }
