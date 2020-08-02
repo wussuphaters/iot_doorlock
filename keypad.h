@@ -48,14 +48,14 @@ int checkPin(String enteredPin) {
     enteredPinHash+=String(str);
   }
 
-  JsonObject& users = get_users();
+  StaticJsonDocument<5000> users = get_users();
   if(users.containsKey("pins"))  {
     int user_id = 0;
-    JsonArray& pin_array = users["pins"];
+    JsonArray pin_array = users["pins"].as<JsonArray>();
 
     Serial.println("Retrieved "+String(pin_array.size())+" user pins, searching for a match");
-    for(int i = 0 ; i < pin_array.size() ; i++)  {
-      if(pin_array[i]["pin"] == enteredPinHash) return pin_array[i]["id"];
+    for(JsonVariant v : pin_array) {
+        if(v["pin"] == enteredPinHash) return v["id"].as<int>();
     }
     
     return user_id;

@@ -13,9 +13,10 @@
 #include "buzzer.h"
 
 #define SERVO_PIN 23
-#define GREEN_LED 18
+#define GREEN_LED 2
 #define RED_LED 4
 #define PUSH_BUTTON 15
+#define BREACH_SENSOR 19
 
 Servo servo;
 bool unlocked=false;
