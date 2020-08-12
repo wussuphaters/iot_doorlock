@@ -8,7 +8,8 @@ void report_status()  {
 }
 
 void handle_control() {
-  StaticJsonDocument<256> json_buffer;
+  StaticJsonDocument<512> json_buffer;
+  
   auto error = deserializeJson(json_buffer, server.arg(0));
   
   if(!error)  {
