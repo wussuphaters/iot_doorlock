@@ -10,7 +10,6 @@
 #include "hardware.h"
 #include "fingerprint_scanner.h"
 #include "keypad.h"
-//#include "mqtt.h"
 #include "web_server.h"
 
 void setup() {
@@ -18,7 +17,6 @@ void setup() {
   init_display();
   display_text("Booting up");
   init_wifi();
-  //init_mqtt();
   init_web_server();
   init_hardware();
   init_fingerprint_scanner();
@@ -28,10 +26,7 @@ void setup() {
 
 void loop() {
   reconnect_wifi();
-  
-  //reconnect_mqtt();
-  //mqtt_client.loop();
-  //report_status();
+
   server.handleClient();
   char key=numpad.getKey();
 
@@ -70,11 +65,9 @@ void loop() {
           }*/
           
           open_lock();
-          //notify(user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
           open_lock();
-          //notify(user_id);
         } else if(user_id == 0)  {
           Serial.println("No pin match found, access denied");
           display_error();
@@ -102,5 +95,9 @@ void loop() {
       beep_nok();
       display_place_finger();
     }
+  }
+
+  if(digitalRead(BREACH_SENSOR) == HIGH)  {
+    beep_keypress();
   }
 }

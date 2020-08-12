@@ -27,6 +27,7 @@ void init_hardware()  {
   pinMode(GREEN_LED, OUTPUT);
   pinMode(RED_LED, OUTPUT);
   pinMode(PUSH_BUTTON, INPUT);
+  pinMode(BREACH_SENSOR, INPUT);
 }
 
 void open_lock()  {
