@@ -32,7 +32,13 @@ void loop() {
 
   if(key) {
     beep_keypress();
-    if(key=='#' && unlocked) close_lock();
+    if(key=='#' && unlocked)  {
+      if(digitalRead(DOOR_SENSOR)) close_lock();
+      else  {
+        Serial.println("Door is not closed correctly !");
+        beep_nok();
+      }
+    }
     else if(!unlocked && (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9' || key=='A' || key=='B' || key=='C' || key=='D'))  {
       String enteredPin="";
 

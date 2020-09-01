@@ -17,6 +17,7 @@
 #define RED_LED 4
 #define PUSH_BUTTON 15
 #define BREACH_SENSOR 19
+#define DOOR_SENSOR 35
 
 Servo servo;
 bool unlocked=false;
@@ -28,6 +29,7 @@ void init_hardware()  {
   pinMode(RED_LED, OUTPUT);
   pinMode(PUSH_BUTTON, INPUT);
   pinMode(BREACH_SENSOR, INPUT);
+  pinMode(DOOR_SENSOR, INPUT);
 }
 
 void open_lock()  {
@@ -56,5 +58,11 @@ void close_lock() {
 
 void on_button_press()  {
   if(!unlocked) open_lock();
-  else close_lock();
+  else  {
+    if(digitalRead(DOOR_SENSOR)) close_lock();
+    else  {
+      Serial.println("Door is not closed correctly !");
+      beep_nok();
+    }
+  }
 }
