@@ -12,6 +12,9 @@
 #include "keypad.h"
 #include "web_server.h"
 
+#define PASSWD_TIMEOUT 5000
+#define DOOR_CLOSING_TIME 2000
+
 void setup() {
   Serial.begin(115200);
   init_display();
@@ -41,6 +44,7 @@ void loop() {
     }
     else if(!unlocked && (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9' || key=='A' || key=='B' || key=='C' || key=='D'))  {
       String enteredPin="";
+      int passwd_elapsed_time = millis();
 
       while(key != '*') {
         if(key=='#' && !unlocked) {
@@ -53,7 +57,14 @@ void loop() {
         }
   
         key=numpad.getKey();
-        if(key) beep_keypress();
+        if(key) {
+          beep_keypress();
+          passwd_elapsed_time = millis();
+        }
+        if(millis() - passwd_elapsed_time >= PASSWD_TIMEOUT)  {
+          Serial.println("Password timeout, aborting");
+          break;
+        }
       }
       if(enteredPin.length() > 0) {
         display_text("Wait...");
