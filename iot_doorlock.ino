@@ -28,8 +28,6 @@ void setup() {
 }
 
 void loop() {
-  reconnect_wifi();
-
   server.handleClient();
   char key=numpad.getKey();
 

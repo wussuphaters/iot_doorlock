@@ -63,7 +63,8 @@ int checkPin(String enteredPin) {
     if(offline_pin_hash == enteredPinHash) {
       return 1;
     } else  {
-      return -1;
+      if(init_wifi()) return checkPin(enteredPin);
+      else return -1;
     }
   }
 }

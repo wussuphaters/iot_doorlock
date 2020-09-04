@@ -34,8 +34,8 @@
     }
   } else  {
     Serial.println("WiFi disconnected");
-    reconnect_wifi();
-    return is_token_valid(token);
+    if(init_wifi()) return is_token_valid(token);
+    else return false;
   }
  }
  
