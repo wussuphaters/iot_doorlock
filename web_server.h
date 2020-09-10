@@ -15,11 +15,13 @@ void handle_control() {
   if(!error)  {
     if(json_buffer.containsKey("token") && json_buffer.containsKey("state")) {
       const char* token = json_buffer["token"];
-      if(is_token_valid(String(token)))  {
+      int user_id = is_token_valid(String(token));
+      if(user_id >= 0)  {
         const char* state = json_buffer["state"];
         if(String(state) == "lock") close_lock();
         else if(String(state) == "unlock") open_lock();
         server.send(200, "text/json", "{\"message\":\"Successfully controlled doorlock\"}");
+        log_activity(unlocked, "web server", user_id);
       } else  {
         server.send(401, "text/json", "{\"error\":\"Invalid JSON Web token\"}");
       }

@@ -58,11 +58,5 @@ void close_lock() {
 
 void on_button_press()  {
   if(!unlocked) open_lock();
-  else  {
-    if(digitalRead(DOOR_SENSOR)) close_lock();
-    else  {
-      Serial.println("Door is not closed correctly !");
-      beep_nok();
-    }
-  }
+  else close_lock();
 }

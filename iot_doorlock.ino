@@ -34,11 +34,8 @@ void loop() {
   if(key) {
     beep_keypress();
     if(key=='#' && unlocked)  {
-      if(digitalRead(DOOR_SENSOR)) close_lock();
-      else  {
-        Serial.println("Door is not closed correctly !");
-        beep_nok();
-      }
+        close_lock();
+        log_activity(false, "outside", 0);
     }
     else if(!unlocked && (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9' || key=='A' || key=='B' || key=='C' || key=='D'))  {
       String enteredPin="";
@@ -80,9 +77,11 @@ void loop() {
           }*/
           
           open_lock();
+          log_activity(true, "outside with personnal secret code", user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
           open_lock();
+          log_activity(true, "outside with offline secret code", 0);
         } else if(user_id == 0)  {
           Serial.println("No pin match found, access denied");
           display_error();
@@ -98,12 +97,16 @@ void loop() {
       }
     }
   }
-  else if(digitalRead(PUSH_BUTTON)==HIGH) on_button_press();
+  else if(digitalRead(PUSH_BUTTON)==HIGH) {
+    on_button_press();
+    log_activity(unlocked, "inside", 0);
+  }
   else  {
     int fp=check_fingerprint();
     if(fp>0 && !unlocked) {
       beep_ok();
       open_lock();
+      log_activity(true, "outside with fingerprint", fp);
     }
     else if(fp == 0)  {
       display_error();
@@ -113,6 +116,7 @@ void loop() {
   }
 
   if(digitalRead(BREACH_SENSOR) == HIGH)  {
-    beep_keypress();
+    breach_alert();
+    while(digitalRead(BREACH_SENSOR) == HIGH) beep_keypress();
   }
 }
