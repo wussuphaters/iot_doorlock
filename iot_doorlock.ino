@@ -77,11 +77,11 @@ void loop() {
           }*/
           
           open_lock();
-          log_activity(true, "outside with personnal secret code", user_id);
+          log_activity(true, "from outside with personnal secret code", user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
           open_lock();
-          log_activity(true, "outside with offline secret code", 0);
+          log_activity(true, "from outside with offline secret code", 0);
         } else if(user_id == 0)  {
           Serial.println("No pin match found, access denied");
           display_error();
@@ -106,7 +106,7 @@ void loop() {
     if(fp>0 && !unlocked) {
       beep_ok();
       open_lock();
-      log_activity(true, "outside with fingerprint", fp);
+      log_activity(true, "from outside with fingerprint", fp);
     }
     else if(fp == 0)  {
       display_error();

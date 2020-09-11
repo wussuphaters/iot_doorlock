@@ -58,7 +58,7 @@ void log_activity(bool action, String action_method, int user_id)  {
       api.begin(String(API_ADDR)+"user/log_activity.php");
       api.addHeader("Content-Type", "application/json");
   
-      String json_str = "{\"jwt\":\"" + jwt + "\",\"log\":{\"device\":\"Main doorlock\",\"state\":\"" + (action ? "unlocked" : "locked") + "\",\"method\":\"" + action_method + "\", \"user_id\":" + user_id + "}}";
+      String json_str = "{\"log\":{\"device_ip\":\"" + WiFi.localIP() +"\",\"state\":\"" + (action ? "unlocked" : "locked") + "\",\"method\":\"" + action_method + "\", \"user_id\":" + user_id + "}}";
       
       int responseCode = api.POST(json_str);
     } else  {
