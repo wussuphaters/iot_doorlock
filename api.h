@@ -14,57 +14,15 @@
 #define API_ADDR "http://192.168.1.100/smart_home_api/api/"
 
 HTTPClient api;
-String jwt = "";
-String password = "";
-
-String login()  {
-  if(WiFi.status() == WL_CONNECTED) {
-    api.begin(String(API_ADDR)+"device/login.php");
-    api.addHeader("Content-Type", "application/json");
-    api.addHeader("charset", "utf-8");
-    int responseCode = api.POST("{\"ip\":\""+WiFi.localIP().toString()+"\",\"password\":\""+password+"\"}");
-    if(responseCode < 0)  {
-      Serial.println("Request error, trying again");
-      return login();
-    } else if(responseCode == 200) {
-      Serial.println("API validated token");
-      StaticJsonDocument<512> json_msg;
-      
-      auto error = deserializeJson(json_msg, api.getString());
-      if(error) {
-        Serial.println("JSON parsing error");
-      } else  {
-        Serial.println("Successfully parsed JSON message");
-        if(json_msg.containsKey("token")) {
-          return json_msg["token"];
-        } else  {
-          Serial.println("Error retrieving JWT");
-        }
-      }
-    } else  {
-      Serial.println("Login failed");
-      return "";
-    }
-  } else  {
-    Serial.println("WiFi disconnected");
-    if(init_wifi()) return login();
-    else return "";
-  }
- }
 
 void log_activity(bool action, String action_method, int user_id)  {
   if(WiFi.status() == WL_CONNECTED) {
-    if(jwt != "") {
       api.begin(String(API_ADDR)+"user/log_activity.php");
       api.addHeader("Content-Type", "application/json");
   
-      String json_str = "{\"log\":{\"device_ip\":\"" + WiFi.localIP() +"\",\"state\":\"" + (action ? "unlocked" : "locked") + "\",\"method\":\"" + action_method + "\", \"user_id\":" + user_id + "}}";
+      String json_str = "{\"log\":{\"device_ip\":\"" + String(WiFi.localIP()) +"\",\"state\":\"" + (action ? "unlocked" : "locked") + "\",\"method\":\"" + action_method + "\", \"user_id\":" + user_id + "}}";
       
       int responseCode = api.POST(json_str);
-    } else  {
-      jwt = login();
-      log_activity(action, action_method, user_id);
-    }
   } else  {
     Serial.println("WiFi disconnected");
     if(init_wifi()) log_activity(action, action_method, user_id);
