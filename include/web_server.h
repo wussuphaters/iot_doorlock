@@ -2,6 +2,35 @@
 
 WebServer server(80);
 
+void delete_fingerprints()  {
+  StaticJsonDocument<512> json_buffer;
+  
+  auto error = deserializeJson(json_buffer, server.arg(0));
+  
+  if(!error)  {
+    if(json_buffer.containsKey("token") && json_buffer.containsKey("user_id")) {
+      const char* token = json_buffer["token"];
+      int user_id = is_token_valid(String(token));
+      if(user_id >= 0)  {
+        const char* fp_id = json_buffer["user_id"];
+        if(String(fp_id) == "*")  {
+          fpScanner.emptyDatabase();
+          server.send(200, "text/json", "{\"message\":\"Successfully deleted all fingerprints from sensor database\"}");
+        } else  {
+          fpScanner.deleteModel(String(fp_id).toInt());
+          server.send(200, "text/json", "{\"message\":\"Successfully deleted user #" + String(fp_id) + " fingerprint from sensor database\"}");
+        }
+      } else  {
+        server.send(401, "text/json", "{\"error\":\"Invalid JSON Web token\"}");
+      }
+    } else  {
+      server.send(400, "text/json", "{\"error\":\"Missing JSON keys\"}");
+    }
+  } else  {
+    server.send(400, "text/json", "{\"error\":\"Invalid JSON format\"}");
+  }
+}
+
 void report_status()  {
   String state = unlocked ? "unlocked" : "locked";
   server.send(200, "text/json", String("{\"state\":\""+state+"\"}"));
@@ -35,8 +64,8 @@ void handle_control() {
 
 void init_web_server()  {
   server.on("/status", HTTP_ANY, report_status);
-  
   server.on("/control", HTTP_POST, handle_control);
+  server.on("/delete_fp", HTTP_POST, delete_fingerprints);
   
   server.begin();
 }

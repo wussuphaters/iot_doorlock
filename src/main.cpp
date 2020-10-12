@@ -66,15 +66,18 @@ void loop() {
         int user_id = checkPin(enteredPin);
         if(user_id > 1)  {
           Serial.println("Access granted to user #"+String(user_id));
-          /*
           if(!is_fingerprint_registered(user_id))  {
             Serial.println("User has no registered fingerprint, registering");
             int tries = 0;
-            while(!add_fingerprint(user_id) && tries < 3)  {
+            bool res = false;
+            while(!res && tries < 3)  {
+              res = add_fingerprint(user_id);
               tries++;
               Serial.println("Try "+String(tries)+" to register fingerprint failed");
+              if(res) fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
+              else fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
             }
-          }*/
+          }
           
           open_lock();
           log_activity(true, "from outside with personnal secret code", user_id);
@@ -101,14 +104,15 @@ void loop() {
     on_button_press();
     log_activity(unlocked, "inside", 0);
   }
-  else  {
+  else if(!unlocked)  {
     int fp=check_fingerprint();
     if(fp>0 && !unlocked) {
-      beep_ok();
+      fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
       open_lock();
       log_activity(true, "from outside with fingerprint", fp);
     }
     else if(fp == 0)  {
+      fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
       display_error();
       beep_nok();
       display_place_finger();
@@ -119,4 +123,6 @@ void loop() {
     breach_alert();
     while(digitalRead(BREACH_SENSOR) == HIGH) beep_keypress();
   }
+
+  ArduinoOTA.handle();
 }
