@@ -48,8 +48,8 @@ int checkPin(String enteredPin) {
     enteredPinHash+=String(str);
   }
 
-  StaticJsonDocument<5000> users = get_users();
-  if(users.containsKey("pins"))  {
+  DynamicJsonDocument users = get_users();
+  if(users.containsKey("pins") && users["pins"].size() > 0)  {
     int user_id = 0;
     JsonArray pin_array = users["pins"].as<JsonArray>();
 

@@ -19,10 +19,10 @@ void init_fingerprint_scanner() {
 }
 
 //Scans a new fingerprint (twice) and stores it
-bool add_fingerprint(int user_id)  {
+bool add_fingerprint(int uid)  {
   if(fpScanner.verifyPassword()) {
     Serial.println("Fingerprint scanner detected");
-    Serial.println("Enrolling fingerprint for user #"+String(user_id));
+    Serial.println("Enrolling fingerprint for user #"+String(uid));
     int empreinte=-1;
     fpScanner.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_BLUE);
     display_place_finger();
@@ -154,7 +154,7 @@ bool add_fingerprint(int user_id)  {
         break;
     }
 
-    empreinte=fpScanner.storeModel(user_id);
+    empreinte=fpScanner.storeModel(uid);
     switch(empreinte) {
       case FINGERPRINT_OK:
         Serial.println("Fingerprint enrolled");
@@ -231,13 +231,7 @@ int check_fingerprint()
     empreinte=fpScanner.fingerSearch();
     switch(empreinte) {
       case FINGERPRINT_OK:
-        if(fpScanner.confidence > 40) {
-          Serial.println(String(fpScanner.confidence)+"% match to user id #"+String(fpScanner.fingerID));
-          return fpScanner.fingerID;
-        } else  {
-          Serial.println("Unsufficient confidence");
-          return 0;
-        }
+        return fpScanner.fingerID;
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
         Serial.println("Communication error");

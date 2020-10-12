@@ -73,9 +73,11 @@ void loop() {
             while(!res && tries < 3)  {
               res = add_fingerprint(user_id);
               tries++;
-              Serial.println("Try "+String(tries)+" to register fingerprint failed");
               if(res) fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
-              else fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
+              else  {
+                Serial.println("Try "+String(tries)+" to register fingerprint failed");
+                fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
+              }
             }
           }
           

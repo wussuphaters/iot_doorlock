@@ -59,9 +59,8 @@ void log_activity(String msg, int user_id)  {
       api.addHeader("Content-Type", "application/json");
   
       String json_str = "{\"token\":\"" + jwt + "\",\"log\":{\"msg\":\"" + msg + "\", \"user_id\":" + user_id + "}}";
-      Serial.println(json_str);
       int responseCode = api.POST(json_str);
-      Serial.println(responseCode);
+      if(responseCode < 0) log_activity(msg, user_id);
     } else  {
       jwt = login();
       log_activity(msg, user_id);
@@ -119,8 +118,8 @@ int is_token_valid(String token)  {
   }
 }
 
-StaticJsonDocument<5000> get_users() {
-  StaticJsonDocument<5000> json_buffer;
+DynamicJsonDocument get_users() {
+  DynamicJsonDocument json_buffer(5000);
   
   if(WiFi.status() == WL_CONNECTED) {
     Serial.println("Attempting to retrieve user pin list...");
@@ -128,24 +127,28 @@ StaticJsonDocument<5000> get_users() {
     api.begin(String(API_ADDR)+"user/get_pins.php");
     int response_code = api.GET();
   
-    if(response_code == 200) {
+    if(response_code < 0) {
+      Serial.println("Request error, trying again");
+      return get_users();
+    } else if(response_code == 200) {
       String response = api.getString();
   
       auto error = deserializeJson(json_buffer, response);
   
       if(!error)  {
         Serial.println("Successfully retrieved user pin list");
-        return json_buffer;
       } else  {
-        Serial.println("Could not retrieve user pin list");
-        return json_buffer;
+        Serial.println("Could not retrieve user pin list (JSON error)");
+        json_buffer.createNestedObject("pins");
       }
     } else  {
-      Serial.println("Could not retrieve user pin list");
-      return json_buffer;
+      Serial.println("Could not retrieve user pin list, trying again");
+      json_buffer.createNestedObject("pins");
     }
   } else  {
     Serial.println("WiFi not connected, could not retrieve user pin list");
-    return json_buffer;
+    json_buffer.createNestedObject("pins");
   }
+
+  return json_buffer;
 }
