@@ -14,20 +14,61 @@
 #define API_ADDR "http://192.168.1.100/smart_home_api/api/"
 
 HTTPClient api;
+String password = "3bf6g%pXV8lAh6$K@5Vw";
+String jwt = "";
 
-void log_activity(bool action, String action_method, int user_id)  {
+String login()  {
   if(WiFi.status() == WL_CONNECTED) {
-      api.begin(String(API_ADDR)+"user/log_activity.php");
-      api.addHeader("Content-Type", "application/json");
-  
-      String json_str = "{\"log\":{\"device_ip\":\"" + String(WiFi.localIP()) +"\",\"state\":\"" + (action ? "unlocked" : "locked") + "\",\"method\":\"" + action_method + "\", \"user_id\":" + user_id + "}}";
-
-      Serial.println(json_str);
+    api.begin(String(API_ADDR)+"device/login.php");
+    api.addHeader("Content-Type", "application/json");
+    api.addHeader("charset", "utf-8");
+    int responseCode = api.POST("{\"ip\":\"" + WiFi.localIP().toString() + "\",\"password\":\"" + password + "\"}");
+    if(responseCode < 0)  {
+      Serial.println("Request error, trying again");
+      return login();
+    } else if(responseCode == 200) {
+      Serial.println("API validated token");
+      StaticJsonDocument<512> json_msg;
       
-      int responseCode = api.POST(json_str);
+      auto error = deserializeJson(json_msg, api.getString());
+      if(error) {
+        Serial.println("JSON parsing error");
+      } else  {
+        Serial.println("Successfully parsed JSON message");
+        if(json_msg.containsKey("token")) {
+          return json_msg["token"];
+        } else  {
+          Serial.println("Error retrieving JWT");
+        }
+      }
+    } else  {
+      Serial.println("Login failed");
+    }
   } else  {
     Serial.println("WiFi disconnected");
-    if(init_wifi()) log_activity(action, action_method, user_id);
+    init_wifi();
+    return login();
+  }
+  return "";
+ }
+
+void log_activity(String msg, int user_id)  {
+  if(WiFi.status() == WL_CONNECTED) {
+    if(jwt != "") {
+      api.begin(String(API_ADDR)+"device/log_activity.php");
+      api.addHeader("Content-Type", "application/json");
+  
+      String json_str = "{\"token\":\"" + jwt + "\",\"log\":{\"msg\":\"" + msg + "\", \"user_id\":" + user_id + "}}";
+      Serial.println(json_str);
+      int responseCode = api.POST(json_str);
+      Serial.println(responseCode);
+    } else  {
+      jwt = login();
+      log_activity(msg, user_id);
+    }
+  } else  {
+    Serial.println("WiFi disconnected");
+    if(init_wifi()) log_activity(msg, user_id);
     else return;
   }
 }

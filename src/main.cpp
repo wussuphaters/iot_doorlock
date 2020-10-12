@@ -35,7 +35,7 @@ void loop() {
     beep_keypress();
     if(key=='#' && unlocked)  {
         close_lock();
-        log_activity(false, "outside", 0);
+        log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from outside"), 0);
     }
     else if(!unlocked && (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9' || key=='A' || key=='B' || key=='C' || key=='D'))  {
       String enteredPin="";
@@ -80,11 +80,11 @@ void loop() {
           }
           
           open_lock();
-          log_activity(true, "from outside with personnal secret code", user_id);
+          log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from outside with personnal secret code"), user_id);
         } else if(user_id == 1) {
           Serial.println("Master password used, access granted");
           open_lock();
-          log_activity(true, "from outside with offline secret code", 0);
+          log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from outside with offline secret code"), 0);
         } else if(user_id == 0)  {
           Serial.println("No pin match found, access denied");
           display_error();
@@ -102,14 +102,14 @@ void loop() {
   }
   else if(digitalRead(PUSH_BUTTON)==HIGH) {
     on_button_press();
-    log_activity(unlocked, "inside", 0);
+    log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from inside"), 0);
   }
   else if(!unlocked)  {
     int fp=check_fingerprint();
     if(fp>0 && !unlocked) {
       fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
       open_lock();
-      log_activity(true, "from outside with fingerprint", fp);
+      log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from outside with fingerprint"), fp);
     }
     else if(fp == 0)  {
       fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);

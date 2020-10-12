@@ -16,9 +16,11 @@ void delete_fingerprints()  {
         if(String(fp_id) == "*")  {
           fpScanner.emptyDatabase();
           server.send(200, "text/json", "{\"message\":\"Successfully deleted all fingerprints from sensor database\"}");
+          log_activity("All fingerprints deleted from sensor database from web server", user_id);
         } else  {
           fpScanner.deleteModel(String(fp_id).toInt());
           server.send(200, "text/json", "{\"message\":\"Successfully deleted user #" + String(fp_id) + " fingerprint from sensor database\"}");
+          log_activity("User #" + String(fp_id) + " fingerprint deleted from sensor database from web server", user_id);
         }
       } else  {
         server.send(401, "text/json", "{\"error\":\"Invalid JSON Web token\"}");
@@ -50,7 +52,7 @@ void handle_control() {
         if(String(state) == "lock") close_lock();
         else if(String(state) == "unlock") open_lock();
         server.send(200, "text/json", "{\"message\":\"Successfully controlled doorlock\"}");
-        log_activity(unlocked, "web server", user_id);
+        log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from web server"), user_id);
       } else  {
         server.send(401, "text/json", "{\"error\":\"Invalid JSON Web token\"}");
       }
