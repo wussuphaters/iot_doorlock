@@ -10,6 +10,8 @@
 
 #include <Adafruit_Fingerprint.h>
 
+#define ENROLL_TIMEOUT 30000
+
 Adafruit_Fingerprint fpScanner = Adafruit_Fingerprint(&Serial2, 1337);
 
 //Initializes communication with the fingerprint scanner
@@ -26,7 +28,12 @@ bool add_fingerprint(int uid)  {
     int empreinte=-1;
     fpScanner.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_BLUE);
     display_place_finger();
+    unsigned long startMillis=millis();
     while(empreinte != FINGERPRINT_OK)  {
+      if(millis() > (startMillis + ENROLL_TIMEOUT) || millis() < startMillis) {
+        Serial.println("Enroll timeout");
+        return false;
+      }
       empreinte=fpScanner.getImage();
       switch(empreinte) {
         case FINGERPRINT_NOFINGER:
@@ -80,14 +87,24 @@ bool add_fingerprint(int uid)  {
     display_remove_finger();
     delay(2000);
     empreinte=0;
+    startMillis = millis();
     while(empreinte != FINGERPRINT_NOFINGER) {
+      if(millis() > (startMillis + ENROLL_TIMEOUT) || millis() < startMillis) {
+        Serial.println("Enroll timeout");
+        return false;
+      }
       empreinte=fpScanner.getImage();
     }
     fpScanner.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_BLUE);
     Serial.println("Place same finger");
     display_place_finger();
     empreinte=-1;
+    startMillis = millis();
     while(empreinte != FINGERPRINT_OK)  {
+      if(millis() > (startMillis + ENROLL_TIMEOUT) || millis() < startMillis) {
+        Serial.println("Enroll timeout");
+        return false;
+      }
       empreinte=fpScanner.getImage();
       switch(empreinte) {
         case FINGERPRINT_OK:
