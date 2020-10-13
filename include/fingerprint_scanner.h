@@ -41,20 +41,20 @@ bool add_fingerprint(int uid)  {
           break;
         case FINGERPRINT_OK:
           fpScanner.LEDcontrol(FINGERPRINT_LED_BREATHING, 100, FINGERPRINT_LED_BLUE);
-          Serial.println("Image prise");
+          Serial.println("Image taken");
           break;
         case FINGERPRINT_PACKETRECIEVEERR:
-          Serial.println("Erreur de communication avec le capteur");
+          Serial.println("Communication error with sensor");
           fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
         case FINGERPRINT_IMAGEFAIL:
-          Serial.println("Erreur de capture");
+          Serial.println("Capture error");
           fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
         default:
-          Serial.println("Erreur inconnue");
+          Serial.println("Unknown error");
           fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
