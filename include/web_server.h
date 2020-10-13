@@ -8,20 +8,14 @@ void delete_fingerprints()  {
   auto error = deserializeJson(json_buffer, server.arg(0));
   
   if(!error)  {
-    if(json_buffer.containsKey("token") && json_buffer.containsKey("user_id")) {
+    if(json_buffer.containsKey("token")) {
       const char* token = json_buffer["token"];
       int user_id = is_token_valid(String(token));
       if(user_id >= 0)  {
-        const char* fp_id = json_buffer["user_id"];
-        if(String(fp_id) == "*")  {
-          fpScanner.emptyDatabase();
-          server.send(200, "text/json", "{\"message\":\"Successfully deleted all fingerprints from sensor database\"}");
-          log_activity("All fingerprints deleted from sensor database from web server", user_id);
-        } else  {
-          fpScanner.deleteModel(String(fp_id).toInt());
-          server.send(200, "text/json", "{\"message\":\"Successfully deleted user #" + String(fp_id) + " fingerprint from sensor database\"}");
-          log_activity("User #" + String(fp_id) + " fingerprint deleted from sensor database from web server", user_id);
-        }
+        fpScanner.deleteModel(String(user_id).toInt());
+        server.send(200, "text/json", "{\"message\":\"Successfully deleted user #" + String(user_id) + " fingerprint from sensor database\"}");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
+        log_activity("User #" + String(user_id) + " fingerprint deleted from sensor database from web server", user_id);
       } else  {
         server.send(401, "text/json", "{\"error\":\"Invalid JSON Web token\"}");
       }
