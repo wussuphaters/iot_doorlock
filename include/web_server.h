@@ -50,14 +50,14 @@ void enroll_fingerprint() {
             Serial.println("Fingerprint successfully enrolled");
             display_unlock();
             beep_ok();
-            log_activity("Successfully enrolled new fingerprint", user_id);
+            log_activity("New fingerprint successfully enrolled", user_id);
           } else  {
             Serial.println("Fingerprint enroll failed");
             display_error();
             beep_nok();
-            log_activity("Failed to enroll new fingerprint", user_id);
+            log_activity("New fingerprint enroll failed attempt", user_id);
           }
-        } else server.send(401, "text/json", "{\"message\":\"Door must be unlocked\"}");
+        } else server.send(403, "text/json", "{\"message\":\"Door must be unlocked to enroll new fingerprint\"}");
       } else  {
         server.send(401, "text/json", "{\"error\":\"Invalid JSON Web token\"}");
       }
