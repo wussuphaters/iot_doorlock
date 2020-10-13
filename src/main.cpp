@@ -71,10 +71,8 @@ void loop() {
             bool res = add_fingerprint(user_id);
               if(res) {
                 Serial.println("Fingerprint successfully enrolled");
-                fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
               } else  {
                 Serial.println("Fingerprint enroll failed");
-                fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
               }
           }
           open_lock();
@@ -105,12 +103,10 @@ void loop() {
   else if(!unlocked)  {
     int fp=check_fingerprint();
     if(fp>0 && !unlocked) {
-      fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
       open_lock();
       log_activity((unlocked ? "Door unlocked" : "Door locked")+String(" from outside with fingerprint"), fp);
     }
     else if(fp == 0)  {
-      fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
       display_error();
       beep_nok();
       display_place_finger();

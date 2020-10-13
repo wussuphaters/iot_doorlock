@@ -32,6 +32,7 @@ bool add_fingerprint(int uid)  {
     while(empreinte != FINGERPRINT_OK)  {
       if(millis() > (startMillis + ENROLL_TIMEOUT) || millis() < startMillis) {
         Serial.println("Enroll timeout");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
       }
       empreinte=fpScanner.getImage();
@@ -40,18 +41,22 @@ bool add_fingerprint(int uid)  {
           break;
         case FINGERPRINT_OK:
           fpScanner.LEDcontrol(FINGERPRINT_LED_BREATHING, 100, FINGERPRINT_LED_BLUE);
-          Serial.println("Image taken");
+          Serial.println("Image prise");
           break;
         case FINGERPRINT_PACKETRECIEVEERR:
-          Serial.println("Communication error with scanner");
+          Serial.println("Erreur de communication avec le capteur");
+          fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
         case FINGERPRINT_IMAGEFAIL:
-          Serial.println("Capture error");
+          Serial.println("Erreur de capture");
+          fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
         default:
-          Serial.println("Unknown error");
+          Serial.println("Erreur inconnue");
+          fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
+          return false;
           break;
       }
     }
@@ -63,21 +68,26 @@ bool add_fingerprint(int uid)  {
         break;
       case FINGERPRINT_IMAGEMESS:
         Serial.println("Bad image quality");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
         Serial.println("Communication error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_FEATUREFAIL:
         Serial.println("No fingerprint detected");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_INVALIDIMAGE:
         Serial.println("No fingerprint detected");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
       default:
         Serial.println("Erreur inconnue");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
     }
@@ -91,6 +101,7 @@ bool add_fingerprint(int uid)  {
     while(empreinte != FINGERPRINT_NOFINGER) {
       if(millis() > (startMillis + ENROLL_TIMEOUT) || millis() < startMillis) {
         Serial.println("Enroll timeout");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
       }
       empreinte=fpScanner.getImage();
@@ -103,6 +114,7 @@ bool add_fingerprint(int uid)  {
     while(empreinte != FINGERPRINT_OK)  {
       if(millis() > (startMillis + ENROLL_TIMEOUT) || millis() < startMillis) {
         Serial.println("Enroll timeout");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
       }
       empreinte=fpScanner.getImage();
@@ -113,10 +125,12 @@ bool add_fingerprint(int uid)  {
           break;
         case FINGERPRINT_PACKETRECIEVEERR:
           Serial.println("Communication error");
+          fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
         case FINGERPRINT_IMAGEFAIL:
           Serial.println("Capture error");
+          fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
           return false;
           break;
       }
@@ -129,22 +143,27 @@ bool add_fingerprint(int uid)  {
         break;
       case FINGERPRINT_IMAGEMESS:
         Serial.println("Bad image quality");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
         Serial.println("Communication error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_FEATUREFAIL:
         Serial.println("No fingerprint detected");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_INVALIDIMAGE:
         Serial.println("No fingerprint detected");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       default:
         Serial.println("Unknown error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
     }
@@ -159,14 +178,17 @@ bool add_fingerprint(int uid)  {
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
         Serial.println("Communication error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_ENROLLMISMATCH:
         Serial.println("Fingerprints don't match");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       default:
         Serial.println("Unknown error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
     }
@@ -175,22 +197,27 @@ bool add_fingerprint(int uid)  {
     switch(empreinte) {
       case FINGERPRINT_OK:
         Serial.println("Fingerprint enrolled");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
         return true;
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
         Serial.println("Communication error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_BADLOCATION:
         Serial.println("Cannot store fingerprint for this user id");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       case FINGERPRINT_FLASHERR:
         Serial.println("Flash memory write error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
       default:
         Serial.println("Unknown error");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return false;
         break;
     }
@@ -248,6 +275,7 @@ int check_fingerprint()
     empreinte=fpScanner.fingerSearch();
     switch(empreinte) {
       case FINGERPRINT_OK:
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 3);
         return fpScanner.fingerID;
         break;
       case FINGERPRINT_PACKETRECIEVEERR:
@@ -256,6 +284,7 @@ int check_fingerprint()
         break;
       case FINGERPRINT_NOTFOUND:
         Serial.println("No match found");
+        fpScanner.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 3);
         return 0;
         break;
       default:
